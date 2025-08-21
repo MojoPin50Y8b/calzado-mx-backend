@@ -38,4 +38,16 @@ public class ShoeController {
         return ResponseEntity.ok(shoeService.create(shoe, brandId));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Shoe> update(@PathVariable Long id,
+            @Validated @RequestBody Shoe shoe,
+            @RequestParam(value = "brandId", required = false) Long brandId) {
+        return ResponseEntity.ok(shoeService.update(id, shoe, brandId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        shoeService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,9 +1,11 @@
 package com.example.calzado_api.controller;
 
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import com.example.calzado_api.model.Shoe;
 import com.example.calzado_api.service.ShoeService;
 
@@ -17,14 +19,12 @@ public class ShoeController {
         this.shoeService = shoeService;
     }
 
+    /** Nuevo: delega en service.list(brandId, q) para filtrar combinado. */
     @GetMapping
-    public List<Shoe> list(@RequestParam(value = "brandId", required = false) Long brandId,
+    public List<Shoe> list(
+            @RequestParam(value = "brandId", required = false) Long brandId,
             @RequestParam(value = "q", required = false) String q) {
-        if (brandId != null)
-            return shoeService.findByBrand(brandId);
-        if (q != null && !q.isBlank())
-            return shoeService.searchByModel(q);
-        return shoeService.findAll();
+        return shoeService.list(brandId, q);
     }
 
     @GetMapping("/{id}")

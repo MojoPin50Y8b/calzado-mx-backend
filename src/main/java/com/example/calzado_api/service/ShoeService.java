@@ -1,7 +1,10 @@
 package com.example.calzado_api.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.example.calzado_api.exception.ResourceNotFoundException;
 import com.example.calzado_api.model.Brand;
 import com.example.calzado_api.model.Shoe;
@@ -10,6 +13,7 @@ import com.example.calzado_api.repository.ShoeRepository;
 
 @Service
 public class ShoeService {
+
     private final ShoeRepository shoeRepository;
     private final BrandRepository brandRepository;
 
@@ -17,6 +21,24 @@ public class ShoeService {
         this.shoeRepository = shoeRepository;
         this.brandRepository = brandRepository;
     }
+
+    /** Nuevo: lista con filtros combinados (marca y texto). */
+    public List<Shoe> list(Long brandId, String q) {
+        boolean hasBrand = (brandId != null);
+        boolean hasQ = StringUtils.hasText(q);
+
+        if (hasBrand && hasQ) {
+            return shoeRepository.findByBrandIdAndModelNameContainingIgnoreCase(brandId, q.trim());
+        } else if (hasBrand) {
+            return shoeRepository.findByBrandId(brandId);
+        } else if (hasQ) {
+            return shoeRepository.findByModelNameContainingIgnoreCase(q.trim());
+        } else {
+            return shoeRepository.findAll();
+        }
+    }
+
+    // ===== CRUD básico que ya tenías =====
 
     public List<Shoe> findAll() {
         return shoeRepository.findAll();
@@ -55,6 +77,7 @@ public class ShoeService {
         shoeRepository.delete(findById(id));
     }
 
+    // ---- Estos métodos pueden seguir existiendo si los usa otro código ----
     public List<Shoe> searchByModel(String q) {
         return shoeRepository.findByModelNameContainingIgnoreCase(q);
     }
